@@ -1,0 +1,41 @@
+version: '3.6'
+
+services:
+  pgadmin:
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin
+      PGADMIN_DEFAULT_PASSWORD: admin
+
+  keycloak-database:
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+  
+  keycloak-server:
+    environment:
+      DB_USER: keycloak
+      DB_PASSWORD: keycloak
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+
+  any-address-database:
+    environment:
+      POSTGRES_USER: any-address
+      POSTGRES_PASSWORD: any-address
+
+  any-address-backend:
+    environment:
+      DATABASE_USER: "any-address"
+      DATABASE_PASSWORD: "any-address"
+      OVERJAX_DEFAULT_LOCALES: "pt-BR,null"
+      OVERJAX_STACK_TRACE_SHOW: "true"
+    volumes:
+      - ./services/any-address-backend/config:/etc/config
+      - ./target/any-address-0.0.1-SNAPSHOT.war:/opt/payara/deployments/any-address.war
+    #: ["java", "-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000", "-jar", "/opt/payara/payara-micro.jar"]
+    entrypoint: ["java", "-jar", "/opt/payara/payara-micro.jar"]
+    command: [
+      "--deploymentDir", "/opt/payara/deployments",
+      "--logProperties", "/etc/config/logging.properties",
+      "--postbootcommandfile", "/etc/config/post-boot-commands.txt"
+    ]

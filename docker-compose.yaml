@@ -1,0 +1,109 @@
+version: '3.6'
+
+networks:
+  mail-server:
+  keycloak-database:
+  keycloak-server:
+  any-address-database:
+  any-address-backend:
+
+volumes: 
+  keycloak-database:
+  any-address-database:
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4
+    networks:
+      - keycloak-database
+      - any-address-database
+    ports:
+      - 5050:80
+    depends_on:
+      #- keycloak-database
+      - any-address-database
+    restart: on-failure
+  
+  keycloak-database:
+    image: postgres:10
+    networks:
+      - keycloak-database
+    environment:
+      POSTGRES_DB: keycloak
+    volumes:
+      - keycloak-database:/var/lib/postgresql/data
+    command: ["postgres",
+      "-c", "logging_collector=on", 
+      "-c", "lc_messages=en_US.UTF-8",
+      "-c", "lc_monetary=en_US.UTF-8",
+      "-c", "lc_numeric=en_US.UTF-8",
+      "-c", "lc_time=en_US.UTF-8",
+      "-c", "log_timezone=America/Recife",
+      "-c", "timezone=America/Recife"]
+    restart: on-failure
+
+  keycloak-server:
+    image: jboss/keycloak:4.6.0.Final
+    networks:
+      - keycloak-database
+      - keycloak-server
+      - mail-server
+    ports:
+      - 8080:8080
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloak-database
+      DB_DATABASE: keycloak
+      JDBC_PARAMS: "useSSL=true&useTimezone=true&serverTimezone=America/Recife"
+    depends_on:
+      - keycloak-database
+    restart: on-failure
+
+  any-address-database:
+    image: postgres:10
+    networks:
+      - any-address-database
+    environment:
+      POSTGRES_DB: any-address
+    command: ["postgres",
+      "-c", "logging_collector=on", 
+      "-c", "lc_messages=en_US.UTF-8",
+      "-c", "lc_monetary=en_US.UTF-8",
+      "-c", "lc_numeric=en_US.UTF-8",
+      "-c", "lc_time=en_US.UTF-8",
+      "-c", "log_timezone=America/Recife",
+      "-c", "timezone=America/Recife"]
+    restart: on-failure
+
+  any-address-backend:
+    image: payara/micro:5.183
+    networks:
+      - any-address-backend
+      - any-address-database
+    ports:
+      - 8081:8080
+      - 8182:8181
+      - 5900:5900
+    environment:
+      DATABASE_POOL_NAME: "any-address"
+      DATABASE_URL: "jdbc:postgresql://any-address-database:5432/any-address?useSSL=true&amp;useTimezone=true&amp;serverTimezone=America/Recife"
+      DATABASE_MAX_POOL_SIZE: "20"
+      DATABASE_MIN_POOL_SIZE: "3"
+      DATABASE_ACQUIRE_INCREMENT: "1"
+      DATABASE_MAX_IDLE_TIME: "1800"
+      DATABASE_MAX_IDLE_TIME_EXCESS_CONNECTIONS: "300"
+      DATABASE_IDLE_CONNECTION_TEST_PERIOD: "120"
+      DATABASE_TEST_CONNECTION_ON_CHECKIN: "true"
+      DATABASE_TEST_CONNECTION_ON_CHECKOUT: "true"
+      DATABASE_CHECKOUT_TIMEOUT: "10000"
+      DATABASE_PREFERRED_TEST_QUERY: "SELECT 1"
+      OVERJAX_RESPONSE_METADATA_HOME_PAGE: "https://seudev.com"
+      OVERJAX_RESPONSE_METADATA_SUPPORT_EMAIL: "contact@seudev.com"
+      OVERJAX_RESPONSE_METADATA_APPLICATION_VERSION: "0.0.1"
+      OVERJAX_RESPONSE_METADATA_AUTHORS: "Thomás Sousa Silva"
+      OVERJAX_RESPONSE_METADATA_COPYRIGHT: "Copyright © 2018-2018 Seudev"
+    volumes:
+      - any-address-database:/var/lib/postgresql/data
+    depends_on:
+      - any-address-database
+    restart: on-failure

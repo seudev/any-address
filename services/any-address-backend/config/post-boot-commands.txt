@@ -1,0 +1,1 @@
+set-config-secrets-dir --directory=/etc/config/.secrets
