@@ -51,6 +51,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.seudev.overjax</groupId>
+			<artifactId>overjax-security-keycloak</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.seudev.overjax</groupId>
 			<artifactId>overjax-starter-data-jpa-postgres</artifactId>
 		</dependency>
 	</dependencies>

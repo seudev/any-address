@@ -1,0 +1,9 @@
+{
+  "realm": "any-address",
+  "realm-public-key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAn+lt1X5ePicddASVTavK68TMhNDk4tKO6oL81dwkhAoN8llwSPlwKyaEMcV95Ih1aYL/EvJjYJwYW5QTJUzF7pGESr7FJ/Y/r6Tv5ilnQ3vn3DMhAUP+vAc7TM3TfdqbfqxSHC+qSymjhhAkERM1by+fY+WAIi1GvL42W5GVbWUBrD3Ax4xXCpbQnfa1TwA/Uu/XhTxnZsLZ0ffUv/Kf9kxcAskxUHGVyKDLPhF9rWONuBvw0ilmWnuFAnzdSDQVkUtOXHel+iWx8EibRxYlIXndcq6bUjVterEPuFqJLv/dNRjJjrZ77PTjQGwlgp0A126e2vrGMvRxqjTFJldDUQIDAQAB",
+  "auth-server-url": "http://localhost:8080/auth",
+  "ssl-required": "external",
+  "resource": "any-address-backend",
+  "public-client": true,
+  "confidential-port": 0
+}
