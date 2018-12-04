@@ -21,44 +21,45 @@ import com.seudev.anyaddress.query.filter.CountryFilter;
 
 @LocalBean
 @Stateless
+@Transactional
 @ValidateOnExecution(type = ALL)
 public class CountryService extends AbstractService {
-
+    
     @Transactional(SUPPORTS)
     public List<Country> findAll(CountryFilter filter) {
         CriteriaQuery<Country> query = cb.createQuery(Country.class);
         Root<Country> from = query.from(Country.class);
-
+        
         List<Predicate> predicates = new ArrayList<>(2);
         if (filter.getAbbreviation() != null) {
             predicates.add(cb.like(from.get(Country_.abbreviation), filter.getAbbreviation()));
         }
-
+        
         if (filter.getName() != null) {
             predicates.add(cb.like(from.get(Country_.name), filter.getName()));
         }
-
+        
         query.where(predicates.toArray(new Predicate[0]));
-
+        
         return entityManager.createQuery(query)
                 .getResultList();
     }
-
+    
     @Transactional(SUPPORTS)
     public Country findByID(UUID id) {
         return entityManager.find(Country.class, id);
     }
-
+    
     public void merge(Country country) {
         entityManager.merge(country);
     }
-
+    
     public void persist(Country country) {
         entityManager.persist(country);
     }
-
+    
     public void remove(Country country) {
         entityManager.remove(country);
     }
-
+    
 }
